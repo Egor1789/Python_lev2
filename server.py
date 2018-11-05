@@ -8,6 +8,19 @@ from utils.utils import encode_data, decode_data, get_name_by_value
 
 # import log_config
 import logging
+#### ДЛЯ ДЗ 6 ПРименение обертывания для функции на 99 строке########
+import functools
+import time
+def loggdzshest(func):
+    @functools.wraps(func)
+    def wrapper_timer(*args, **kwargs):
+        start_time = time.perf_counter()    # 1
+        value = func(*args, **kwargs)
+        end_time = time.perf_counter()      # 2
+        run_time = end_time - start_time    # 3
+        print(f"Finished {func.__name__!r} in {run_time:.4f} secs")
+        return value
+    return wrapper_timer
 
 # logger = log_config.logger
 ###ВМесто Logging написал logger = logging. (поскольку иначе не работало)####
@@ -83,6 +96,7 @@ class ChatServer:
                 except:
                     self.sock_disconnect(read)
 
+    @loggdzshest
     def sock_disconnect(self, sock: socket) -> None:
         sock_name = get_name_by_value(self.contacts, sock)
         print("Client disconnnected.", sock_name)
